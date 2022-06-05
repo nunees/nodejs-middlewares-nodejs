@@ -10,11 +10,21 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const {username} = request.headers;
+  const user = users.find((user) => user.username === username);
+  if(!user)
+    return response.status(404).json({error: "User does not exists!"})
+  if(!user.pro && user.todos.length == 10)
+    return response.json({error: "User To-do exceed limit, but a new plan"})
+
+  console.log(user.todos.length)
+  request.user = user;
+  return next();
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+
+    
 }
 
 function checksTodoExists(request, response, next) {
