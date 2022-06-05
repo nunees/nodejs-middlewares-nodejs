@@ -15,10 +15,9 @@ function checksExistsUserAccount(request, response, next) {
   if(!user)
     return response.status(404).json({error: "User does not exists!"})
 
-  console.log(user.todos.length)
   request.user = user;
   return next();
-}
+} 
 
 function checksCreateTodosUserAvailability(request, response, next) {
   const {user} = request;
@@ -29,11 +28,31 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const {username} = request.headers;
+  const userExists = users.find((user) => user.username === username);
+  if(!userExists)
+    return response.status(404).json({error: "User does not exist!"})
+
+  const {id} = request.params;
+  if(!validate(id))
+    return response.status(400).json({error: "bad uuid format"});
+  const todoExists = userExists.todos.find((todo) => todo.id === id);
+  if(!todoExists)
+    return response.status(404).json({error: "To-do does not exists"})
+  
+  request.user = userExists;
+  request.todo = todoExists;
+  return next();
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const {id} = request.params;
+  const user = users.find((user) => user.id === id);
+  if(!user)
+    return response.status(404).json({error: "User does not exists!"})
+    
+  request.user = user;
+  return next();
 }
 
 app.post('/users', (request, response) => {
