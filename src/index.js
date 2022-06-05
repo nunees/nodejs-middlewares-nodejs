@@ -14,8 +14,6 @@ function checksExistsUserAccount(request, response, next) {
   const user = users.find((user) => user.username === username);
   if(!user)
     return response.status(404).json({error: "User does not exists!"})
-  if(!user.pro && user.todos.length == 10)
-    return response.json({error: "User To-do exceed limit, but a new plan"})
 
   console.log(user.todos.length)
   request.user = user;
@@ -23,8 +21,11 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
+  const {user} = request;
+  if(!user.pro && user.todos.length >= 10)
+    return response.status(403).json({error: "User To-do exceed limit, but a new plan"})
 
-    
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
